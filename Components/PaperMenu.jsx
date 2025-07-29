@@ -4,9 +4,11 @@ import { Entypo } from '@expo/vector-icons'
 import { useState } from 'react'
 import { useContext } from 'react'
 import { AppContext } from './TasksContext'
+import { deleteTaskApi  } from './api'
+import TaskEditingForm from './TaskEditiingForm'
 
 export default function PaperMenu({task}){
-    const {tasks, setTasks} = useContext(AppContext)
+    const {tasks, setTasks, editVisible, setEditVisible} = useContext(AppContext)
     const [visible, setVisible] = useState(false)
     const closeMenu = ()=>setVisible(false)
     const openMenu = ()=>setVisible(true)
@@ -17,7 +19,9 @@ export default function PaperMenu({task}){
         })
     }
 
-        const deleteTask = (taskId)=>{
+        const deleteTask = async (taskId)=>{
+                const response =  await deleteTaskApi(taskId)
+                console.log(response)
         setTasks(tasks.filter(task=>task.id!=taskId))
     }
 
@@ -29,6 +33,11 @@ export default function PaperMenu({task}){
             {text: 'No'}
         ])
         }
+
+
+    const editTask = ()=>{
+        setEditVisible(true)
+    }
 
     const styles = StyleSheet.create({
         item:{
@@ -51,13 +60,14 @@ export default function PaperMenu({task}){
     return (
         <View
         style={styles.menu}>
-    <Menu.Item titleStyle={{fontSize: 13, fontWeight: 800}} containerStyle={styles.item} leadingIcon="pencil" onPress={() => {}} title="Edit"  />
+    <Menu.Item titleStyle={{fontSize: 13, fontWeight: 800}} containerStyle={styles.item} leadingIcon="pencil" onPress={() => {editTask()}} title="Edit"  />
     <Menu.Item titleStyle={{fontSize: 13, fontWeight: 800}} containerStyle={styles.item} leadingIcon="delete" onPress={() => {openDeleAlert(task.id)}} title="Delete" />
         {task.status!='done' && 
         <Menu.Item  style={styles.item} leadingIcon="wrap" titleStyle={{fontSize: 13, fontWeight: 800}}
-        onPress={() => {changeStatus(task.id, task.status == 'to do'? 'in progress': 'done')}} 
+        onPress={() => {changeStatus(task.id, task.status.toLowerCase() == 'to do'? 'in-progress': 'done')}} 
         title={`Move to ${task.status == 'to do'? 'in-progress': 'done'}`} />  }
      
+     {editVisible && <TaskEditingForm task={task}/>}
       </View>
     )
 

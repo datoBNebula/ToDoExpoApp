@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { View, TextInput, Button, StyleSheet, Select } from "react-native";
+import { getAllTasks, postTask } from "./api";
 import DatePicker from "react-native-date-picker";
 import { useContext } from "react";
 import { AppContext } from "./TasksContext";
@@ -11,7 +12,7 @@ const [open, setOpen] = useState(false);
   const [optionValue, setOptionValue] = useState("Easy");
   const [options, setOptions] = useState([
     { label: 'Easy', value: 'easy' },
-    { label: 'Intermediate', value: 'intermediate' },
+    { label: 'medium', value: 'medium' },
     { label: 'Hard', value: 'Hard' },
     { label: 'Very Hard', value: 'Very Hard' },
   ]);
@@ -26,7 +27,7 @@ const [open, setOpen] = useState(false);
 
   const {taskId, setTaskId} = useContext(AppContext)
 
-    const addItem = ()=>{
+    const addItem = async ()=>{
     const task = {
         name: newTask.name,
         id: taskId,
@@ -35,6 +36,7 @@ const [open, setOpen] = useState(false);
         status: newTask.status
     }
     setTasks(prev=>[...prev, task])
+    console.log(await postTask(task))
   }
 
   const addHandler = ()=>{
@@ -68,7 +70,11 @@ const [open, setOpen] = useState(false);
       </View>
 
   <View style={styles.buttonsView}>
-      <Button title="Save" onPress={()=>addHandler()} />
+      <Button title="Save" onPress={async ()=>{
+        addHandler(),
+        await getAllTasks()
+
+      }} />
       <Button title="Close" onPress={()=>setVisible(false)} />
   </View>
 

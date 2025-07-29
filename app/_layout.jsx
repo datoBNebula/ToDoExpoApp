@@ -10,6 +10,7 @@ import { PaperProvider } from "react-native-paper";
 
 
 export default function RootLayout(){
+
     const router = useRouter()
     return (
     <AppProvider>
